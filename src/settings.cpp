@@ -41,6 +41,8 @@ int CARSIZE = 4;
 Ctsp CTSP = FIX_PREFIX;
 CtspObjective CTSP_OBJECTIVE = CTSP_VMT;
 string DATAROOT = "data";
+int DWELL_ALIGHT = 0;
+int DWELL_PICKUP = 0;
 string EDGECOST_FILE = "edges.csv";
 int FINAL_TIME = 240000;
 int INITIAL_TIME = 0;       // Time in HHMMSS
@@ -148,6 +150,10 @@ void initialize(int argc, char** argv)
             INTERVAL = stoi(value);
         else if (key == "RTV_TIMELIMIT")
             RTV_TIMELIMIT = stoi(value);
+        else if (key == "DWELL_PICKUP")
+            DWELL_PICKUP = stoi(value);
+        else if (key == "DWELL_ALIGHT")
+            DWELL_ALIGHT = stoi(value);
         else
             throw runtime_error("Argument not recognized: " + key);
     }

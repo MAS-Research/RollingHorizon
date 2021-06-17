@@ -273,9 +273,16 @@ void move_vehicle(Vehicle & vehicle, Trip const & trip, Network const & network,
             if (onboard.size() > 1)
                 for (auto r : onboard)
                     r->shared = true;
-        }
+        } 
         
-        int node = (!is_pickup ? -20 : -10);
+        // This is the new batched dwell logic.  Must match routeplanner's expectations.
+        int node;
+        if (!is_pickup && (x + 1 == path.size() || path[x + 1].is_pickup || path[x + 1].node != target_node))
+            node = -20; // DWELL_ALIGHT
+        else if (is_pickup && (!path[x + 1].is_pickup || path[x + 1].node != target_node))
+            node = -10; // DWELL_PICKUP.
+        else
+            node = target_node;
         int dwell = network.get_time(node, vehicle.node);
         if (dwell >= traveltime_left)
         {

@@ -6,9 +6,6 @@
 #define MISS_COST  10000000.0 // 100000
 #define RMT_REWARD 100.0
 
-#define DWELL_PICKUP 0 // 60         // Time to perform a pickup or drop off.
-#define DWELL_ALIGHT 0 // 30
-
 #define OPTIMIZER_VERBOSE true
 #define SIMULATOR_VERBOSE false
 #define PRUNING_RV_K 0 // 30 // 0 // 30        // Heuristic that only connects requests with nearest k vehicles.
@@ -27,6 +24,8 @@ extern int CARSIZE;
 extern Ctsp CTSP;
 extern CtspObjective CTSP_OBJECTIVE;
 extern std::string DATAROOT;
+extern int DWELL_ALIGHT;
+extern int DWELL_PICKUP;
 extern std::string EDGECOST_FILE;
 extern int FINAL_TIME;
 extern int INITIAL_TIME;

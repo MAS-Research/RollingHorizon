@@ -90,10 +90,11 @@ int get_alight_deadline(Request const * r)
     return r->entry_time + r->ideal_traveltime + MAX_DETOUR;
 }
 
-
+enum Action {PICKUP, DROPOFF, NO_ACTION};
 
 pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_capacity,
-        set<MetaNodeStop*,MnsSort> const & initially_available, Network const & network, int time, int best_time)
+        set<MetaNodeStop*,MnsSort> const & initially_available, Network const & network, int time, int best_time,
+        Action prev_action)
 {
     // If there is no new available stop to add...
     if (!initially_available.size())
@@ -115,6 +116,14 @@ pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_
         if (m->node->is_pickup)
             if (m->node->r->entry_time > arrival_time)
                 arrival_time = m->node->r->entry_time;
+        
+        // Account for rule about batched boarding/alighting.  Must match simulator behavior.
+        if (prev_action == DROPOFF && (m->node->is_pickup || initial_location != new_location))
+            arrival_time += DWELL_ALIGHT;
+        else if (prev_action == PICKUP && (!m->node->is_pickup || initial_location != new_location))
+            arrival_time += DWELL_PICKUP;
+        if (m->node->is_pickup && m->node->r->entry_time > arrival_time)
+            arrival_time = m->node->r->entry_time;
         
         // Skip if this violates the time bound.
         if (best_time != -1 && arrival_time >= best_time) // Use for VMT objective
@@ -160,8 +169,9 @@ pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_
             continue;
         
         // Recursive call to get cost, partial reverse path of tail.
+        Action this_action = (m->node->is_pickup ? PICKUP : DROPOFF);
         pair<int,vector<NodeStop*>> tail = recursive_search(new_location, new_residual_capacity,
-                remaining_nodes, network, arrival_time, best_time);
+                remaining_nodes, network, arrival_time, best_time, this_action);
         
         // If this is the best we have seen so far, update!
         if (tail.first == -1)
@@ -181,7 +191,7 @@ pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_
         set<MetaNodeStop*> const & initially_available, Network const & network, int time, int best_time)
 {
     set<MetaNodeStop*,MnsSort> update (initially_available.begin(), initially_available.end());
-    return recursive_search(initial_location, residual_capacity, update, network, time, best_time);
+    return recursive_search(initial_location, residual_capacity, update, network, time, best_time, NO_ACTION);
 }
 
 pair<int,vector<NodeStop>> rebalance(Vehicle const & v, vector<Request*> const & rs, Network const & network)
