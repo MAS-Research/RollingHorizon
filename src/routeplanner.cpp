@@ -358,7 +358,7 @@ pair<int,vector<NodeStop>> travel(Vehicle const & vehicle, vector<Request*> cons
 
 pair<int,vector<NodeStop*>> recursive_search_timed(int initial_location, int residual_capacity,
         set<MetaNodeStop*,MnsSort> const & initially_available, Network const & network, int time, int best_time,
-        chrono::steady_clock::time_point t)
+        Action prev_action, chrono::steady_clock::time_point t)
 {
     // If there is no new available stop to add...
     if (!initially_available.size())
@@ -390,6 +390,12 @@ pair<int,vector<NodeStop*>> recursive_search_timed(int initial_location, int res
         if (m->node->is_pickup)
             if (m->node->r->entry_time > arrival_time)
                 arrival_time = m->node->r->entry_time;
+        
+        // Account for rule about batched boarding/alighting.  Must match simulator behavior.
+        if (prev_action == DROPOFF && (m->node->is_pickup || initial_location != new_location))
+            arrival_time += DWELL_ALIGHT;
+        else if (prev_action == PICKUP && (!m->node->is_pickup || initial_location != new_location))
+            arrival_time += DWELL_PICKUP;
         
         // Skip if this violates the time bound.
         if (best_time != -1 && arrival_time >= best_time) // Use for VMT objective
@@ -435,8 +441,9 @@ pair<int,vector<NodeStop*>> recursive_search_timed(int initial_location, int res
             continue;
         
         // Recursive call to get cost, partial reverse path of tail.
+        Action this_action = (m->node->is_pickup ? PICKUP : DROPOFF);
         pair<int,vector<NodeStop*>> tail = recursive_search_timed(new_location, new_residual_capacity,
-                remaining_nodes, network, arrival_time, best_time, t);
+                remaining_nodes, network, arrival_time, best_time, this_action, t);
         
         // If this is the best we have seen so far, update!
         if (tail.first == -1)
@@ -457,7 +464,7 @@ pair<int,vector<NodeStop*>> recursive_search_timed(int initial_location, int res
         chrono::steady_clock::time_point t)
 {
     set<MetaNodeStop*,MnsSort> update (initially_available.begin(), initially_available.end());
-    return recursive_search_timed(initial_location, residual_capacity, update, network, time, best_time, t);
+    return recursive_search_timed(initial_location, residual_capacity, update, network, time, best_time, NO_ACTION, t);
 }
 
 pair<int,vector<NodeStop>> new_time_travel(Vehicle const & v, vector<Request*> const & rs,

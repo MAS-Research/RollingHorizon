@@ -275,7 +275,7 @@ void make_rtvgraph(void* rtv_data)
                 for (auto r : v->pending_requests)
                     cout << r->id << " ";
                 cout << endl;
-                getchar();
+                throw runtime_error("Previous assignment no longer feasible.");
             }
         }
         
