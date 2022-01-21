@@ -120,6 +120,8 @@ int Network::get_time(int node_one, int node_two) const
         return DWELL_PICKUP;
     else if (node_one == -20)
         return DWELL_ALIGHT;
+    else if (node_one == -30)
+        return 0;
     else if (node_one < 0 || node_two < 0)
     {
         cout << "Network Error: Line " << __LINE__ << endl;
@@ -131,7 +133,7 @@ int Network::get_time(int node_one, int node_two) const
 int Network::get_distance(int node_one, int node_two) const
 {
     return get_time(node_one, node_two);
-    if (node_one == -10 || node_one == -20)
+    if (node_one == -10 || node_one == -20 || node_one == -30)
         return 0;
     if (node_one < 0 || node_two < 0)
     {

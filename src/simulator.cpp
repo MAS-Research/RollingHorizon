@@ -233,7 +233,29 @@ void move_vehicle(Vehicle & vehicle, Trip const & trip, Network const & network,
             interrupted = true;  // Since this must be interrupted by waiting time.
             break;
         }
+
         
+        // Now process waiting logic. 
+        if (r->entry_time >= current_time)
+        {
+            int waiting_time = r->entry_time - current_time;
+            if (waiting_time >= traveltime_left)
+            {
+                vehicle.prev_node = -30;
+                interrupted = true;
+                vehicle.offset = waiting_time - traveltime_left;
+                break;
+            }
+            else
+            {
+                current_time += waiting_time;
+                traveltime_left -= waiting_time;
+            }
+        }
+ 
+        actions << vehicle.id << "," << encode_time(current_time) <<
+                "," << target_node << ",W" << endl;
+
         // Now that we have arrived at the next destination, update the appropriate variables.
         jobs_completed++;
         char code;
@@ -253,7 +275,7 @@ void move_vehicle(Vehicle & vehicle, Trip const & trip, Network const & network,
             vehicle.set_state(Idle, current_time);
             break;
         }
-        
+             
         // Now process Dwell logic.  Pick up and drop off the passengers.
         if (!is_pickup)
         {
