@@ -41,6 +41,7 @@ vector<Vehicle*> buffer::get_active_vehicles(vector<Vehicle> & vehicles, int tim
     return buffer;
 }
 
+// requests that already entered
 vector<Request*> buffer::get_new_requests(vector<Request> & requests, int time)
 {
     vector<Request*> buffer;
@@ -52,6 +53,34 @@ vector<Request*> buffer::get_new_requests(vector<Request> & requests, int time)
     return buffer;
 }
 
+//get incoming requests to calculate service rate 
+
+vector<Request*> buffer::get_incoming_requests(vector<Request> & requests, int time)
+{
+    vector<Request*> buffer;
+
+    for (auto & r : requests)
+        if (r.entry_time > time  && time >= r.entry_time - INTERVAL) // If already entered, but not too long ago.
+            buffer.push_back(&r);
+
+    return buffer;
+}
+
+vector<Request*> buffer::get_incoming_requests_0(vector<Request> & requests, int time)
+{
+    vector<Request*> buffer;
+
+    for (auto & r : requests)
+        if (r.entry_time >= time  && time >= r.entry_time - INTERVAL) // If already entered, but not too long ago.
+            buffer.push_back(&r);
+
+    return buffer;
+}
+
+
+
+
+//batch processing for rolling horizon
 vector<Request*> buffer::get_new_requests_0(vector<Request> & requests, int time, int rh)
 {
     vector<Request*> buffer;

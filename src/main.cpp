@@ -172,20 +172,30 @@ int main(int argc, char *argv[])
             if (time == INITIAL_TIME)
             {
                 new_requests = buffer::get_new_requests_0(requests, time, RH);
-                vector<Request*> new_requests_real = buffer::get_new_requests(requests, time);
+                vector<Request*> new_requests_real = buffer::get_incoming_requests(requests, time);
                 stats_entry_count += new_requests_real.size();
             }
             else
             {
                 new_requests = buffer::get_new_requests_offset(requests, time, RH);
-                vector<Request*> new_requests_real = buffer::get_new_requests(requests, time);
+                vector<Request*> new_requests_real = buffer::get_incoming_requests_0(requests, time);
                 stats_entry_count += new_requests_real.size();
             }
         }
         else
         {
-            new_requests = buffer::get_new_requests(requests, time);
-            stats_entry_count += new_requests.size();
+            if (time == INITIAL_TIME)
+            {
+                new_requests = buffer::get_new_requests(requests,time); 
+                vector<Request*> new_requests_real = buffer::get_incoming_requests_0(requests, time);
+                stats_entry_count += new_requests_real.size();
+            }
+            else
+            {
+                new_requests = buffer::get_new_requests(requests,time);
+                vector<Request*> new_requests_real = buffer::get_incoming_requests(requests, time);
+                stats_entry_count += new_requests_real.size();
+            }
         }
 
 
