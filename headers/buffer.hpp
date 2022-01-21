@@ -30,10 +30,14 @@
 
 #include <vector>
 
+
 namespace buffer
 {
 std::vector<Vehicle*> get_active_vehicles(std::vector<Vehicle> & vehicles, int time);
 std::vector<Request*> get_new_requests(std::vector<Request> & requests, int time);
+std::vector<Request*> get_new_requests_mpc(std::vector<Request> & requests, int time, int rh);
+std::vector<Request*> get_new_requests_0(std::vector<Request> & requests, int time, int rh);
+std::vector<Request*> get_new_requests_offset(std::vector<Request> & requests, int time, int rh);
 };
 
 #endif /* BUFFER_HPP */
