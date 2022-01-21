@@ -31,6 +31,7 @@
 #define MAX_STAY_TIME 24 //24 hours
 using namespace std;
 
+
 vector<Vehicle*> buffer::get_active_vehicles(vector<Vehicle> & vehicles, int time)
 {
     vector<Vehicle*> buffer;
@@ -45,9 +46,26 @@ vector<Request*> buffer::get_new_requests(vector<Request> & requests, int time)
     vector<Request*> buffer;
 
     for (auto & r : requests)
-        if (r.entry_time <= time && time < r.entry_time + INTERVAL) // If already entered, but not too long ago.
+        if (r.entry_time <= time  && time < r.entry_time + INTERVAL) // If already entered, but not too long ago.
             buffer.push_back(&r);
 
     return buffer;
 }
 
+vector<Request*> buffer::get_new_requests_0(vector<Request> & requests, int time, int rh)
+{
+    vector<Request*> buffer;
+    for (auto & r : requests)
+	if (r.entry_time - (rh*INTERVAL) <= time) 
+	    buffer.push_back(&r);
+    return buffer;
+}
+
+vector<Request*> buffer::get_new_requests_offset(vector<Request> & requests, int time, int rh)
+{
+    vector<Request*> buffer;
+    for (auto & r : requests)
+	if (r.entry_time - (rh*INTERVAL) <= time && time < r.entry_time + INTERVAL - (rh*INTERVAL))
+	    buffer.push_back(&r);
+    return buffer;
+}
