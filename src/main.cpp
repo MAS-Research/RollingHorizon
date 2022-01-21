@@ -145,6 +145,9 @@ int main(int argc, char *argv[])
     { // Add header to the top of the ilp log file.
         ofstream ilpfile(RESULTS_DIRECTORY + "/ilp.csv", std::ios_base::app);
         ilpfile << "Time\tObj\tSolverTime\tAbsGap\tRelGap\tNumAssigned\tStatus" << endl;
+
+        ofstream assign_file(RESULTS_DIRECTORY + "/assign.csv", std::ios_base::app);
+        assign_file << "id\tentry_time\tboarding_time\twaiting_time" << endl;    
     }
 
     info("Done with all set up!", Purple);
@@ -166,7 +169,7 @@ int main(int argc, char *argv[])
         vector <Request*> new_requests; //define new requests
         if (RH != 0)
         {
-            if (time == 0)
+            if (time == INITIAL_TIME)
             {
                 new_requests = buffer::get_new_requests_0(requests, time, RH);
                 vector<Request*> new_requests_real = buffer::get_new_requests(requests, time);
@@ -260,6 +263,12 @@ int main(int argc, char *argv[])
                 stats_total_waiting_time += r->boarding_time - r->entry_time;
                 stats_pickup_count++;
                 service_count++;
+                // write assign csv file
+                ofstream assign_file(RESULTS_DIRECTORY + "/assign.csv", std::ios_base::app);
+                assign_file << r->id << "\t";
+                assign_file << encode_time(r->entry_time) << "\t";
+                assign_file << encode_time(r->boarding_time) << "\t";
+                assign_file << r->boarding_time - r->entry_time << endl;
             }
             for (auto r : vehicle.just_alighted)
             {   
@@ -271,6 +280,8 @@ int main(int argc, char *argv[])
         }
         {
             ofstream results_file(RESULTS_DIRECTORY + "/results.log", std::ios_base::app);
+            ofstream json_file(RESULTS_DIRECTORY + "/jsons.log", std::ios_base::app);
+            
             results_file << "TIME STAMP:" << encode_time(time) << endl;
             results_file << "SYSTEM TIME: " << current_time() << endl;  // Automatically adds its own newline.
             results_file << "\tIteration Assignment Time\t" << duration_assignment_process << endl;
@@ -283,24 +294,32 @@ int main(int argc, char *argv[])
             storage_service_count = service_count;
             results_file << endl;
 
+            json_file << "\"" <<encode_time(time) << "\"" << ":" << "{"; //timestamp becomes key
+            json_file << "\"SYSTEM TIME\":" << "\"" << current_time() << "\"" << ",";
+            json_file << "\"Pending requests\":" <<"\"" << active_requests.size() << "\"" << ",";
+
             // Update statistics.
 
             // Service Rate
             double service_rate = 100 * stats_pickup_count / double(stats_entry_count);
             results_file << "\tService Rate\t" << service_rate << "\t%" << endl;
             info("Service rate is " + to_string(service_rate) + ".", Red);
+            json_file << "\"Service Rate \":" << "\"" << service_rate << "\"" << ",";
 
             // Average waiting time.
             double average_waiting_time = stats_total_waiting_time / double(stats_pickup_count);
             results_file << "\tAvg Waiting\t" << average_waiting_time << endl;
+            json_file << "\"Avg Waiting\":" << "\"" << average_waiting_time << "\"" << ",";
 
             // Average riding time.
             double average_riding_time = stats_total_in_vehicle_time / double(stats_dropoff_count);
             results_file << "\tAvg Riding\t" << average_riding_time << endl;
+            json_file << "\"Avg Riding\":" << "\"" << average_riding_time << "\"" << ",";
 
             // Average total delay.
             double average_total_delay = stats_total_delay / double(stats_dropoff_count);
             results_file << "\tAvg Delay\t" << average_total_delay << endl;
+            json_file << "\"Avg Delay\":" << "\"" << average_total_delay << "\"" << "}" << ",";
 
             // Mean passengers, absolute.
             double mean_passengers = (time != decode_time(INITIAL_TIME) ? 

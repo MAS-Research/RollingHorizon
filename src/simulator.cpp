@@ -256,6 +256,14 @@ void move_vehicle(Vehicle & vehicle, Trip const & trip, Network const & network,
         actions << vehicle.id << "," << encode_time(current_time) <<
                 "," << target_node << ",W" << endl;
 
+        
+        if (traveltime_left <= 0)
+        {
+            interrupted = true;  // Since this must be interrupted by waiting time.
+            break;
+        }
+
+
         // Now that we have arrived at the next destination, update the appropriate variables.
         jobs_completed++;
         char code;
