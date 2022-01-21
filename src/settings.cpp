@@ -52,6 +52,7 @@ int MAX_DETOUR = 600;
 int MAX_WAITING = 300;
 string REQUEST_DATA_FILE = "requests.csv";
 string RESULTS_DIRECTORY = "results";
+int RH = 0;
 int RTV_TIMELIMIT = 0;
 string TIMEFILE = "times.csv";
 string VEHICLE_DATA_FILE = "vehicles.csv";
@@ -91,6 +92,8 @@ void initialize(int argc, char** argv)
             DATAROOT = process_string(value);
         else if (key == "RESULTS_DIRECTORY")
             RESULTS_DIRECTORY = process_string(value);
+        else if (key == "RH")
+            RH = stoi(value);
         else if (key == "TIMEFILE")
             TIMEFILE = process_string(value);
         else if (key == "EDGECOST_FILE")

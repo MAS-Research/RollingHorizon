@@ -35,6 +35,7 @@ extern int MAX_DETOUR;
 extern int MAX_WAITING;
 extern std::string REQUEST_DATA_FILE;
 extern std::string RESULTS_DIRECTORY;
+extern int RH;
 extern int RTV_TIMELIMIT;
 extern std::string TIMEFILE;
 extern std::string VEHICLE_DATA_FILE;
