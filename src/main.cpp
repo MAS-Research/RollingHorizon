@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
         ofstream results(RESULTS_DIRECTORY + "/results.log", ios_base::app);
         results << "DATAROOT " << DATAROOT << endl;
         results << "RESULTS_DIRECTORY " << RESULTS_DIRECTORY << endl;
+        results << "RH" << RH << endl;
         results << "TIMEFILE " << TIMEFILE << endl;
         results << "EDGECOST_FILE " << EDGECOST_FILE << endl;
         results << "VEHICLE_LIMIT " << VEHICLE_LIMIT << endl;
@@ -161,8 +162,29 @@ int main(int argc, char *argv[])
         // Get the set of active vehicles and new requests for this iteration.
         info("Running buffer update", Yellow);
         vector<Vehicle*> active_vehicles = buffer::get_active_vehicles(vehicles, time);
-        vector<Request*> new_requests = buffer::get_new_requests(requests, time);
-        stats_entry_count += new_requests.size();
+        
+        vector <Request*> new_requests; //define new requests
+        if (RH != 0)
+        {
+            if (time == 0)
+            {
+                new_requests = buffer::get_new_requests_0(requests, time, RH);
+                vector<Request*> new_requests_real = buffer::get_new_requests(requests, time);
+                stats_entry_count += new_requests_real.size();
+            }
+            else
+            {
+                new_requests = buffer::get_new_requests_offset(requests, time, RH);
+                vector<Request*> new_requests_real = buffer::get_new_requests(requests, time);
+                stats_entry_count += new_requests_real.size();
+            }
+        }
+        else
+        {
+            new_requests = buffer::get_new_requests(requests, time);
+            stats_entry_count += new_requests.size();
+        }
+
 
         // Adding new requests.
         for (auto r : new_requests)
