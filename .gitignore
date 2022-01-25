@@ -1,5 +1,10 @@
 # Based on "C++.gitignore" from GitHub.
 
+# data and results file
+data_Chatta/
+results_Chatta/
+backup/
+
 # Prerequisites
 *.d
 
