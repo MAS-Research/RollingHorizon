@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
         }
         {
             ofstream results_file(RESULTS_DIRECTORY + "/results.log", std::ios_base::app);
-            ofstream json_file(RESULTS_DIRECTORY + "/jsons.log", std::ios_base::app);
+            ofstream json_file(RESULTS_DIRECTORY + "/json.log", std::ios_base::app);
             
             results_file << "TIME STAMP:" << encode_time(time) << endl;
             results_file << "SYSTEM TIME: " << current_time() << endl;  // Automatically adds its own newline.
@@ -315,7 +315,7 @@ int main(int argc, char *argv[])
             double service_rate = 100 * stats_pickup_count / double(stats_entry_count);
             results_file << "\tService Rate\t" << service_rate << "\t%" << endl;
             info("Service rate is " + to_string(service_rate) + ".", Red);
-            json_file << "\"Service Rate \":" << "\"" << service_rate << "\"" << ",";
+            json_file << "\"Service Rate\":" << "\"" << service_rate << "\"" << ",";
 
             // Average waiting time.
             double average_waiting_time = stats_total_waiting_time / double(stats_pickup_count);
