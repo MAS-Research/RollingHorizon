@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     double duration;
     double max_assignment_time = 0;
     chrono::time_point<chrono::high_resolution_clock>
-        clock_start, clock_stop, clock_iteration_start, clock_iteration_stop;
+        clock_start, clock_stop, clock_iteration_start, clock_iteration_stop, clock_simulation_start, clock_simulation_stop;
 
     { // Add header to the top of the ilp log file.
         ofstream ilpfile(RESULTS_DIRECTORY + "/ilp.csv", std::ios_base::app);
@@ -152,6 +152,7 @@ int main(int argc, char *argv[])
 
     info("Done with all set up!", Purple);
     info("Starting iterations!", Cyan);
+    clock_simulation_start = std::chrono::high_resolution_clock::now();
     int time = decode_time(INITIAL_TIME) - INTERVAL;
     while(time < decode_time(FINAL_TIME) - INTERVAL)  // Each loop is a simulation of a time step.
     {
@@ -382,7 +383,7 @@ int main(int argc, char *argv[])
 
         info("Done with iteration", Green);
     } /* End of iteration loop. */
-
+    clock_simulation_stop = std::chrono::high_resolution_clock::now();
     // Final statistics for the final summary!
     {
         ofstream results_file(RESULTS_DIRECTORY + "/results.log", std::ios_base::app);
@@ -399,6 +400,9 @@ int main(int argc, char *argv[])
                     final_count++;
 
         double service_rate = 100 * final_count / double(stats_entry_count);
+        double compute_time = 0.000001 * duration_cast<microseconds>(
+                clock_simulation_stop - clock_simulation_start).count();
+        results_file << "\tCompute Time\t" << compute_time << endl;
         results_file << "\tService Rate\t" << service_rate << "\t%" << endl;
         results_file << "\tServed\t" << final_count << endl;
         results_file << "\tError Count\t" << errors << endl;
