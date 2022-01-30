@@ -404,6 +404,12 @@ int main(int argc, char *argv[])
                 clock_simulation_stop - clock_simulation_start).count();
         results_file << "\tCompute Time\t" << compute_time << endl;
         results_file << "\tService Rate\t" << service_rate << "\t%" << endl;
+        double average_waiting_time = stats_total_waiting_time / double(stats_pickup_count);    
+        results_file << "\tAvg Waiting\t" << average_waiting_time << endl;
+        double average_riding_time = stats_total_in_vehicle_time / double(stats_dropoff_count); 
+        results_file << "\tAvg Riding\t" << average_riding_time << endl;
+        double average_total_delay = stats_total_delay / double(stats_dropoff_count);
+        results_file << "\tAvg Delay\t" << average_total_delay << endl;
         results_file << "\tServed\t" << final_count << endl;
         results_file << "\tError Count\t" << errors << endl;
 
