@@ -1,7 +1,5 @@
 # Rolling horizon framework
 
-This is an extension of OpenRidepoolSimulator to consider future knowledge. Based upon OpenRidepoolSimulator (https://github.com/MAS-Research/OpenRidepoolSimulator), rolling horizon features are added.
-
 The software is tested on linux with G++ compiler. Optimization is written with Mosek Optimizer version 8.1.0.56 and may not be compatible with later or current versions of the Mosek.
 
 To compile the program, simply enter the directory and run the "make" command.
