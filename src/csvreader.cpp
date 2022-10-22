@@ -80,7 +80,7 @@ vector<Vehicle> csvreader::load_vehicles()
         if (VEHICLE_LIMIT > 0 && ++count >= VEHICLE_LIMIT)
             break;
     }
-
+    
     return vehicles;
 }
 
@@ -130,10 +130,12 @@ vector<Request> csvreader::load_requests(Network const & network)
         r.id = stoi(request_id);
         r.entry_time = read_time(requested_time_string);
         r.latest_boarding = r.entry_time + MAX_WAITING;
+        network.get_time(r.origin, r.destination);
         r.latest_alighting = r.entry_time + MAX_DETOUR + network.get_time(r.origin, r.destination);
         r.ideal_traveltime = network.get_time(r.origin, r.destination);
         
         requests.push_back(r);
+
     }
 
     return requests;
