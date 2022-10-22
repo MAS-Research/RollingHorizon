@@ -426,9 +426,10 @@ int main(int argc, char *argv[])
                 (time - decode_time(INITIAL_TIME)) * vehicles.size()); // Buffer or not?
         results_file << "\tMean Passen\t" << mean_passengers << endl;
 
-        long long total_idle = 0, total_enroute = 0, total_rebalancing = 0, total_inuse = 0;
+        long long total_idle = 0, total_enroute = 0, total_rebalancing = 0, total_inuse = 0, total_vmt = 0;
         for (auto &v : vehicles)
         {
+            total_vmt += v.get_distance_traveled();
             total_idle += v.get_total_idle(time);
             total_enroute += v.get_total_enroute(time);
             total_rebalancing += v.get_total_rebalancing(time);
@@ -439,6 +440,7 @@ int main(int argc, char *argv[])
         results_file << "\tTotal En Route\t" << total_enroute << endl;
         results_file << "\tTotal Rebalancing\t" << total_rebalancing << endl;
         results_file << "\tTotal Inuse\t" << total_inuse << endl;
+        results_file << "\tTotal VMT\t" << total_vmt << endl;
     }
 
 }

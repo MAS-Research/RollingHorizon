@@ -45,6 +45,9 @@ struct Request
     int ideal_traveltime = 0;
     
     int entry_time;
+    int demand;
+    int max_waiting;
+    int max_detour;
     int boarding_time;
     int alighting_time;
     int latest_boarding;

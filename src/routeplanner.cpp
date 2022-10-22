@@ -132,9 +132,9 @@ pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_
         // Assert this satisfies the capacity constraints.
         int new_residual_capacity = residual_capacity;
         if (m->node->is_pickup)
-            new_residual_capacity--;
+            new_residual_capacity -= m->node->r->demand;
         else
-            new_residual_capacity++;
+            new_residual_capacity += m->node->r->demand;
         if (new_residual_capacity < 0)
             continue;
         
