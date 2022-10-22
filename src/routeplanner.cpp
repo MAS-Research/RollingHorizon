@@ -87,7 +87,7 @@ pair<int,vector<NodeStop>> format_path(pair<int,vector<NodeStop*>> const & rever
 
 int get_alight_deadline(Request const * r)
 {
-    return r->entry_time + r->ideal_traveltime + MAX_DETOUR;
+    return r->entry_time + r->ideal_traveltime + r->max_detour;
 }
 
 enum Action {PICKUP, DROPOFF, NO_ACTION};
@@ -139,7 +139,7 @@ pair<int,vector<NodeStop*>> recursive_search(int initial_location, int residual_
             continue;
         
         // Assert this is in the acceptable time range.
-        if (m->node->is_pickup && arrival_time > m->node->r->entry_time + MAX_WAITING)
+        if (m->node->is_pickup && arrival_time > m->node->r->entry_time + m->node->r->max_waiting)
             continue;
         if (get_alight_deadline(m->node->r) < arrival_time)
             continue;
@@ -411,7 +411,7 @@ pair<int,vector<NodeStop*>> recursive_search_timed(int initial_location, int res
             continue;
         
         // Assert this is in the acceptable time range.
-        if (m->node->is_pickup && arrival_time > m->node->r->entry_time + MAX_WAITING)
+        if (m->node->is_pickup && arrival_time > m->node->r->entry_time + m->node->r->max_waiting)
             continue;
         if (get_alight_deadline(m->node->r) < arrival_time)
             continue;
